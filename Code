@@ -1,0 +1,105 @@
+#include <Servo.h>
+
+//kinematic analysis for Manipulator robot arm 2 DOF..tinkercad simulation
+//Forward & Inverse
+
+Servo Motor1;
+Servo Motor2;
+double Theta1; // Angle 1 in degree.
+double Theta2;// Angle 2 in degree.
+double Theta1_Rid; // Angle 1 in Radian.
+double Theta2_Rid; // Angle 2 in Radian.
+double Phi; // Full angle 
+double Phi_Rid; // Full angle in Radian
+float L1; // Add Link 1
+float L2; // Add Link 1
+float X; 
+float Y; 
+
+int select;
+
+
+void setup()
+{
+Serial.begin(9600);
+
+Serial.println("Hello, this is kinematic analysis for Manipulator robot arm 2 DOF");
+Serial.println("For Forward press 1 or Inverse press 2 ");  
+      while (Serial.available()==0){}
+            select=Serial.parseInt();
+
+ if (select==1){           
+  Serial.println("Input your robot arm 1: ");
+      while (Serial.available()==0){}
+              L1=Serial.parseFloat();
+              
+  Serial.println("Input your robot arm 2: ");
+      while (Serial.available()==0){}
+              L2=Serial.parseFloat();
+              
+  Serial.println("Enter the angle value 1 in degree: ");
+      while (Serial.available()==0){};
+            Theta1=Serial.parseFloat(); 
+                    Theta1_Rid=Theta1*M_PI/180;
+                    
+  Serial.println("Enter the angle value 2 in degree: ");
+      while (Serial.available()==0) {};
+            Theta2=Serial.parseFloat();
+                    Theta2_Rid=Theta2*M_PI/180;
+                    
+  X=L1*cos(Theta1_Rid)+L2*cos(Theta1_Rid+Theta2_Rid);
+      Serial.print("X position = ");
+           Serial.println(X);
+  
+  Y=L1*sin(Theta1_Rid)+L2*sin(Theta1_Rid+Theta2_Rid);
+      Serial.print("Y position = ");
+           Serial.println(Y);
+  
+  Phi=(Theta1+Theta2);
+      Serial.print("Phi = ");
+           Serial.println(Phi);
+  
+ }
+
+else if (select==2){
+  Serial.println("Input your robot arm 1: ");
+      while (Serial.available()==0){}
+              L1=Serial.parseFloat();
+              
+  Serial.println("Input your robot arm 2: ");
+      while (Serial.available()==0){}
+              L2=Serial.parseFloat();
+              
+  Serial.println("Enter Full angle value in degree: ");
+      while (Serial.available()==0){};
+             Phi=Serial.parseFloat(); 
+                    Phi_Rid=Phi*M_PI/180;
+                    
+  Serial.println("Input X position: ");
+      while (Serial.available()==0){};
+             X=Serial.parseFloat();
+             
+  Serial.println("Input Y position: ");
+      while (Serial.available()==0){};
+             Y=Serial.parseFloat(); 
+             
+  Theta2_Rid=(acos(((X*X)+(Y*Y)-(L1*L1))/(2*L1*L2)));
+  Theta1=(Phi_Rid-Theta2_Rid)*180/M_PI; 
+      Serial.print("angle value 1 in degree= ");
+             Serial.println(Theta1); 
+  Theta2=(Theta2_Rid*180/M_PI);
+      Serial.print("angle value 2 in degree= ");
+             Serial.println(Theta2);
+
+}
+  Motor1.attach(2);
+  Motor2.attach(4); 
+}
+
+void loop()
+{
+  Motor1.write(Theta1);
+  delay(2000);
+  Motor2.write(Theta2);
+  delay(1000);
+}
